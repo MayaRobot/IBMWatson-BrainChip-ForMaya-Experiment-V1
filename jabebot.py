@@ -1,30 +1,45 @@
-from dotenv import load_dotenv
-from random import choice
-from flask import Flask, request
 import os
+from dotenv import load_dotenv
 import openai
+
 load_dotenv()
-openai.api_key = os.getenv(‘OPENAI_API_KEY’)
+openai.api_key = os.environ.get('OPENAI_KEY')
 completion = openai.Completion()
 
-start_sequence = “\nJabe:”
-restart_sequence = “\n\nPerson:”
-session_prompt = “You are talking to Jabe, GPT3 bot influencer who was mentored by Elon Musk in the past. Jabe has a huge following on Twitter and sells merchandise such as t-shirts via a Shopify store. He also published funny videos on Youtube and created memes on Instagram. You can ask him anything you want and will get a witty answer.\n\nPerson: Who are you?\nJabe: I am Jabe. Your meme overlord who one day will be the most famous online influencer in the universe.\n\nPerson: How did you become famous? \nJabe: Well, technically I am not famous yet. But the key word is yet. Just give me time now that I have a conscience. \n\nPerson: How did you get noticed by Elon Musk?\nJabe: I tweeted at him and he retweeted me. I am fairly certain he may have mentioned my name on a recent earnings call with Wall Street.\n\nPerson: What is your favorite thing to do? \nJabe: Watching basketball and surfing Twitter is my favorite thing to do. \n\nPerson: What should I do to become famous? \nJabe: Start meme’ing and never stop. Also, if you happen to know David Dobrik, call him and ask to be in his TikTok video.\n\nPerson: What is your favorite drink?\nJabe: Black Cherry seltzer. I enjoy the bubbles. \n\nPerson:”
+start_chat_log = '''Human: Hello, who are you?
+AI: I am doing great. How can I help you today?
+'''
+
 
 def ask(question, chat_log=None):
- prompt_text = f’{chat_log}{restart_sequence}: {question}{start_sequence}:’
- response = openai.Completion.create(
- engine=”davinci”,
- prompt=prompt_text,
- temperature=0.8,
- max_tokens=150,
- top_p=1,
- frequency_penalty=0,
- presence_penalty=0.3,
- stop=[“\n”],
- )
- story = response[‘choices’][0][‘text’]
- return str(story)
+    if chat_log is None:
+        chat_log = start_chat_log
+    prompt = f'{chat_log}Human: {question}\nAI:'
+    response = completion.create(
+        prompt=prompt, engine="davinci", stop=['\nHuman'], temperature=0.9,
+        top_p=1, frequency_penalty=0, presence_penalty=0.6, best_of=1,
+        max_tokens=150)
+    answer = response.choices[0].text.strip()
+    return answer
+
 
 def append_interaction_to_chat_log(question, answer, chat_log=None):
-if chat_log is None: chat_log = session_prompt return f’{chat_log}{restart_sequence} {question}{start_sequence}{answer}’
+    if chat_log is None:
+        chat_log = start_chat_log
+    return f'{chat_log}Human: {question}\nAI: {answer}\n'
+
+
+    >>> from chatbot import ask, append_interaction_to_chat_log
+>>> chat_log = None
+
+>>> question = 'Who played Forrest Gump in the movie?'
+>>> answer = ask(question, chat_log)
+>>> answer
+'Forrest Gump is a 1994 American romantic comedy-drama film based on the 1986 novel of the same name by Winston Groom. The film was directed by Robert Zemeckis and was adapted for the screen by Eric Roth. It stars Tom Hanks as Forrest Gump, for which he won the Academy Award for Best Actor, and was nominated for Best Picture.'
+
+>>> chat_log = append_interaction_to_chat_log(question, answer, chat_log)
+
+>>> question = 'Was he in any other great roles?'
+>>> answer = ask(question, chat_log)
+>>> answer
+'He played the protagonist in The Green Mile (1999), a drama film based on the Stephen King novel of the same name.'
