@@ -4,7 +4,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 app = Flask(__name__)
 
 
-@app.route('/bot', methods=['POST'])
+@app.route('/chatbot', methods=['POST'])
 def bot():
     incoming_msg = request.values['Body']
 
