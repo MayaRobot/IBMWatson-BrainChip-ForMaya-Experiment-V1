@@ -17,3 +17,4 @@ def bot():
 
     r = MessagingResponse()
     r.message(answer)
+    return str(r)
