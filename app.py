@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 @app.route('/chatbot', methods=['POST'])
-def AI():
+def chatbot():
     incoming_msg = request.values['Body']
 
     # use the incoming message to generate the response here
