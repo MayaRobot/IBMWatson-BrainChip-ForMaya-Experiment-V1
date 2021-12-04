@@ -3,7 +3,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from chatbot import ask, append_interaction_to_chat_log
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'top-secret!'
+app.config['SECRET_KEY'] = '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'
 
 
 @app.route('/bot', methods=['POST'])
