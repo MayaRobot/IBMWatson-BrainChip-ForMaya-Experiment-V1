@@ -1,5 +1,6 @@
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
+from chatbot import ask, append_interaction_to_chat_log
 
 app = Flask(__name__)
 
