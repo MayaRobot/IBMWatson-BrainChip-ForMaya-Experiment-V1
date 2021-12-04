@@ -8,8 +8,4 @@ app = Flask(__name__)
 def bot():
     incoming_msg = request.values['Body']
 
-    # use the incoming message to generate the response here
-
-    r = MessagingResponse()
-    r.message('this is the response')
-    return str(r)
+ 
